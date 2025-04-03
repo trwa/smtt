@@ -5,7 +5,7 @@ import {SimpleTrueSpend} from "./simple/plutus.ts";
 import {Tx, TxComplete, TxSigned,} from "https://deno.land/x/lucid@0.20.9/lib/lucid/mod.ts";
 
 async function fund() {
-  const script = new SimpleTrueSpend();
+  const script = new SimpleTrueSpend("not working");
   const address = lucid.utils.scriptToAddress(script);
   const datum = Data.to(undefined, SimpleTrueSpend._d);
   const tx: Tx = lucid.newTx()
@@ -22,7 +22,7 @@ async function fund() {
 }
 
 async function spend() {
-  const script = new SimpleTrueSpend();
+  const script = new SimpleTrueSpend("not working");
   const address = lucid.utils.scriptToAddress(script);
   const datum = Data.to(undefined, SimpleTrueSpend._d);
   const redeemer = Data.to(undefined, SimpleTrueSpend._r);

@@ -25,16 +25,222 @@
           "$ref": "#/definitions/Void"
         }
       },
-      "compiledCode": "587601010032323232323225333002323232323253330073370e900118041baa0011323232324a2a66601466e1d2000300b375400a2a66601a60186ea80145261616300d300e002300c001300937540022c6014601600460120026012004600e00260086ea8004526136565734aae7555cf2ab9f5742ae89",
-      "hash": "f68690fd92364733805ce5ef2e5ceea5406c05f4ba74af278eaecf6c"
+      "parameters": [
+        {
+          "title": "_tag_mint",
+          "schema": {
+            "$ref": "#/definitions/PolicyId"
+          }
+        }
+      ],
+      "compiledCode": "587b01010032323232323223225333004323232323253330093370e900118051baa0011323232324a2a66601866e1d2000300d375400a2a66601e601c6ea80145261616300f3010002300e001300b37540022c6018601a004601600260160046012002600c6ea800452613656375c002ae6955ceaab9e5573eae855d11",
+      "hash": "a0a7f2b9e11b4745600501386236ec8aa418100aeb0e564f9acce358"
     },
     {
       "title": "simple.true.else",
-      "compiledCode": "587601010032323232323225333002323232323253330073370e900118041baa0011323232324a2a66601466e1d2000300b375400a2a66601a60186ea80145261616300d300e002300c001300937540022c6014601600460120026012004600e00260086ea8004526136565734aae7555cf2ab9f5742ae89",
-      "hash": "f68690fd92364733805ce5ef2e5ceea5406c05f4ba74af278eaecf6c"
+      "parameters": [
+        {
+          "title": "_tag_mint",
+          "schema": {
+            "$ref": "#/definitions/PolicyId"
+          }
+        }
+      ],
+      "compiledCode": "587b01010032323232323223225333004323232323253330093370e900118051baa0011323232324a2a66601866e1d2000300d375400a2a66601e601c6ea80145261616300f3010002300e001300b37540022c6018601a004601600260160046012002600c6ea800452613656375c002ae6955ceaab9e5573eae855d11",
+      "hash": "a0a7f2b9e11b4745600501386236ec8aa418100aeb0e564f9acce358"
+    },
+    {
+      "title": "smtt.run.spend",
+      "datum": {
+        "title": "_d",
+        "schema": {
+          "$ref": "#/definitions/Void"
+        }
+      },
+      "redeemer": {
+        "title": "_r",
+        "schema": {
+          "$ref": "#/definitions/Void"
+        }
+      },
+      "parameters": [
+        {
+          "title": "_stt_mint",
+          "schema": {
+            "$ref": "#/definitions/PolicyId"
+          }
+        },
+        {
+          "title": "_tag_mint",
+          "schema": {
+            "$ref": "#/definitions/PolicyId"
+          }
+        },
+        {
+          "title": "_tag_spend",
+          "schema": {
+            "$ref": "#/definitions/ScriptHash"
+          }
+        },
+        {
+          "title": "_contract_spend",
+          "schema": {
+            "$ref": "#/definitions/ScriptHash"
+          }
+        },
+        {
+          "title": "_split_threshold",
+          "schema": {
+            "$ref": "#/definitions/Int"
+          }
+        }
+      ],
+      "compiledCode": "588f0101003232323232322322322322322322533300c323232323253330113370e900118091baa0011323232324a2a66602866e1d20003015375400a2a66602e602c6ea80145261616301730180023016001301337540022c6028602a004602600260260046022002601c6ea800452613656375a0026eb8004dd70009bae001375c002ae6955ceaab9e5573eae855d101",
+      "hash": "310692aa719b2b8900c3a6f1d6468f69554db5846ade2a936cb5e239"
+    },
+    {
+      "title": "smtt.run.else",
+      "parameters": [
+        {
+          "title": "_stt_mint",
+          "schema": {
+            "$ref": "#/definitions/PolicyId"
+          }
+        },
+        {
+          "title": "_tag_mint",
+          "schema": {
+            "$ref": "#/definitions/PolicyId"
+          }
+        },
+        {
+          "title": "_tag_spend",
+          "schema": {
+            "$ref": "#/definitions/ScriptHash"
+          }
+        },
+        {
+          "title": "_contract_spend",
+          "schema": {
+            "$ref": "#/definitions/ScriptHash"
+          }
+        },
+        {
+          "title": "_split_threshold",
+          "schema": {
+            "$ref": "#/definitions/Int"
+          }
+        }
+      ],
+      "compiledCode": "588f0101003232323232322322322322322322533300c323232323253330113370e900118091baa0011323232324a2a66602866e1d20003015375400a2a66602e602c6ea80145261616301730180023016001301337540022c6028602a004602600260260046022002601c6ea800452613656375a0026eb8004dd70009bae001375c002ae6955ceaab9e5573eae855d101",
+      "hash": "310692aa719b2b8900c3a6f1d6468f69554db5846ade2a936cb5e239"
+    },
+    {
+      "title": "smtt.stt.mint",
+      "redeemer": {
+        "title": "_r",
+        "schema": {
+          "$ref": "#/definitions/Void"
+        }
+      },
+      "parameters": [
+        {
+          "title": "_utxo",
+          "schema": {
+            "$ref": "#/definitions/cardano~1transaction~1OutputReference"
+          }
+        }
+      ],
+      "compiledCode": "5870010100323232323232225333003323232323253330083370e900018049baa001132324a2a66601266e1d2000300a37540062a66601860166ea800c5261616375c601860146ea800458c02cc030008c028004c028008c020004c014dd50008a4c26cacae6955ceaab9e5573eae855d101",
+      "hash": "bfaace4c88f4241c735f40ca804e0d3bd207b0a1e0582a3fe617f134"
+    },
+    {
+      "title": "smtt.stt.else",
+      "parameters": [
+        {
+          "title": "_utxo",
+          "schema": {
+            "$ref": "#/definitions/cardano~1transaction~1OutputReference"
+          }
+        }
+      ],
+      "compiledCode": "5870010100323232323232225333003323232323253330083370e900018049baa001132324a2a66601266e1d2000300a37540062a66601860166ea800c5261616375c601860146ea800458c02cc030008c028004c028008c020004c014dd50008a4c26cacae6955ceaab9e5573eae855d101",
+      "hash": "bfaace4c88f4241c735f40ca804e0d3bd207b0a1e0582a3fe617f134"
+    },
+    {
+      "title": "smtt.tag.mint",
+      "redeemer": {
+        "title": "_r",
+        "schema": {
+          "$ref": "#/definitions/Void"
+        }
+      },
+      "parameters": [
+        {
+          "title": "_stt_mint",
+          "schema": {
+            "$ref": "#/definitions/PolicyId"
+          }
+        }
+      ],
+      "compiledCode": "58ad0101003232323232322322533300432323232323253233300b3001002132324a2a6660186004601a6ea801454ccc03cc038dd50028a4c2c2c6eb8c03cc034dd50018a99980599b87480080084c8c8c8c928a999807180218079baa007153330113010375400e2930b0b18089809001180800098069baa00316370e900018051baa001300c300d002300b001300b00230090013006375400229309b2b1bae0015734aae7555cf2ab9f5742ae881",
+      "hash": "9d358c89264e513376ea4ea1a5c62fe3dd1767a5520ac6529ea50dca"
+    },
+    {
+      "title": "smtt.tag.spend",
+      "datum": {
+        "title": "_d",
+        "schema": {
+          "$ref": "#/definitions/Void"
+        }
+      },
+      "redeemer": {
+        "title": "_r",
+        "schema": {
+          "$ref": "#/definitions/Void"
+        }
+      },
+      "parameters": [
+        {
+          "title": "_stt_mint",
+          "schema": {
+            "$ref": "#/definitions/PolicyId"
+          }
+        }
+      ],
+      "compiledCode": "58ad0101003232323232322322533300432323232323253233300b3001002132324a2a6660186004601a6ea801454ccc03cc038dd50028a4c2c2c6eb8c03cc034dd50018a99980599b87480080084c8c8c8c928a999807180218079baa007153330113010375400e2930b0b18089809001180800098069baa00316370e900018051baa001300c300d002300b001300b00230090013006375400229309b2b1bae0015734aae7555cf2ab9f5742ae881",
+      "hash": "9d358c89264e513376ea4ea1a5c62fe3dd1767a5520ac6529ea50dca"
+    },
+    {
+      "title": "smtt.tag.else",
+      "parameters": [
+        {
+          "title": "_stt_mint",
+          "schema": {
+            "$ref": "#/definitions/PolicyId"
+          }
+        }
+      ],
+      "compiledCode": "58ad0101003232323232322322533300432323232323253233300b3001002132324a2a6660186004601a6ea801454ccc03cc038dd50028a4c2c2c6eb8c03cc034dd50018a99980599b87480080084c8c8c8c928a999807180218079baa007153330113010375400e2930b0b18089809001180800098069baa00316370e900018051baa001300c300d002300b001300b00230090013006375400229309b2b1bae0015734aae7555cf2ab9f5742ae881",
+      "hash": "9d358c89264e513376ea4ea1a5c62fe3dd1767a5520ac6529ea50dca"
     }
   ],
   "definitions": {
+    "ByteArray": {
+      "title": "ByteArray",
+      "dataType": "bytes"
+    },
+    "Int": {
+      "dataType": "integer"
+    },
+    "PolicyId": {
+      "title": "PolicyId",
+      "dataType": "bytes"
+    },
+    "ScriptHash": {
+      "title": "ScriptHash",
+      "dataType": "bytes"
+    },
     "Void": {
       "title": "Unit",
       "anyOf": [
@@ -42,6 +248,27 @@
           "dataType": "constructor",
           "index": 0,
           "fields": []
+        }
+      ]
+    },
+    "cardano/transaction/OutputReference": {
+      "title": "OutputReference",
+      "description": "An `OutputReference` is a unique reference to an output on-chain. The `output_index`\n corresponds to the position in the output list of the transaction (identified by its id)\n that produced that output",
+      "anyOf": [
+        {
+          "title": "OutputReference",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "transaction_id",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "output_index",
+              "$ref": "#/definitions/Int"
+            }
+          ]
         }
       ]
     }
