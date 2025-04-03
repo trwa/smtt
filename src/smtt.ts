@@ -1,15 +1,34 @@
-import {CardanoTransactionOutputReference, SimpleTrueSpend, SmttRunSpend, SmttSttMint, SmttTagMint, SmttTagSpend,} from "./simple/plutus.ts";
+import {
+  CardanoTransactionOutputReference,
+  SimpleTrueSpend,
+  SmttRunSpend,
+  SmttSttMint,
+  SmttTagMint,
+  SmttTagSpend,
+} from "./smtt/plutus.ts";
 import {lucid} from "./config.ts";
-import {fromText} from "https://deno.land/x/lucid@0.20.4/src/utils/mod.ts";
-import {Data, Hasher, Script, toHex, Tx, TxComplete, TxSigned, Utxo,} from "https://deno.land/x/lucid@0.20.9/mod.ts";
+import {
+  Data,
+  fromText,
+  Hasher,
+  Script,
+  toHex,
+  Tx,
+  TxComplete,
+  TxSigned,
+  Utxo,
+} from "https://deno.land/x/lucid@0.20.9/mod.ts";
 
-class SMTT {
+import {findPool, sleep} from "./utils.ts";
+
+class SmttMake {
   private utxo: Utxo;
   private readonly sttMint: Script;
   private readonly tagMint: Script;
   private readonly tagSpend: Script;
   private contract: Script;
   private readonly runSpend: Script;
+  private readonly splitThreshold: bigint;
 
   public constructor(
     utxo: Utxo,
@@ -46,6 +65,7 @@ class SMTT {
     this.tagSpend = tagSpend;
     this.contract = contract;
     this.runSpend = runSpend;
+    this.splitThreshold = splitThreshold;
   }
 
   public async fund(): Promise<void> {
@@ -63,8 +83,10 @@ class SMTT {
     tx = tx
       .payToContract(
         lucid.utils.scriptToAddress(this.runSpend),
-        // FIXME: Encode False (or None) in the Datum
-        { Inline: Data.void(), scriptRef: this.runSpend },
+        {
+          Inline: Data.to({ started: false }, SmttRunSpend._d),
+          scriptRef: this.runSpend,
+        },
         { [stt]: 1n },
       );
 
@@ -100,16 +122,20 @@ class SMTT {
       )
       .payToContract(
         addressRunSpend,
-        // FIXME: Encode True (or Some(..)) in the Datum
-        { Inline: Data.void(), scriptRef: this.runSpend },
+        {
+          Inline: Data.to({ started: true }, SmttRunSpend._d),
+          scriptRef: this.runSpend,
+        },
         { [stt]: 1n },
       );
 
     tx = tx
       .payToContract(
         lucid.utils.scriptToAddress(this.tagSpend),
-        // FIXME: Encode [] in the Datum
-        { Inline: Data.void(), scriptRef: this.runSpend },
+        {
+          Inline: Data.to({ pool: [] }, SmttTagSpend._d),
+          scriptRef: this.tagSpend,
+        },
         { [tagLower]: 1n, [tagUpper]: 1n },
       );
 
@@ -119,14 +145,10 @@ class SMTT {
     console.log(hash);
   }
 
-  public async add(tag: string): Promise<void> {
-    return;
+  public async add(tagName: Uint8Array): Promise<void> {
+    const pool = await findPool(this.tagMint, this.tagSpend, tagName);
+    console.log(pool);
   }
-}
-
-async function sleep(seconds: number) {
-  console.log(`delay ${seconds}s...`);
-  await new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 }
 
 function makeContract(smttMint: Script): Script {
@@ -137,9 +159,11 @@ if (import.meta.main) {
   const utxo = (await lucid.wallet.getUtxos())[0];
   console.log(utxo);
 
-  const process = new SMTT(utxo, makeContract, 10n);
+  const process = new SmttMake(utxo, makeContract, 1n);
 
   await process.fund();
-  await sleep(120);
+  await sleep(60);
   await process.start();
+  await sleep(60);
+  await process.add(new Uint8Array(32));
 }
