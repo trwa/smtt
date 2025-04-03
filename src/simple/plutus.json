@@ -54,7 +54,7 @@
       "datum": {
         "title": "_d",
         "schema": {
-          "$ref": "#/definitions/Void"
+          "$ref": "#/definitions/smtt~1RunDatum"
         }
       },
       "redeemer": {
@@ -168,6 +168,31 @@
       "hash": "bfaace4c88f4241c735f40ca804e0d3bd207b0a1e0582a3fe617f134"
     },
     {
+      "title": "smtt.tag.spend",
+      "datum": {
+        "title": "_d",
+        "schema": {
+          "$ref": "#/definitions/smtt~1TagDatum"
+        }
+      },
+      "redeemer": {
+        "title": "_r",
+        "schema": {
+          "$ref": "#/definitions/Void"
+        }
+      },
+      "parameters": [
+        {
+          "title": "_stt_mint",
+          "schema": {
+            "$ref": "#/definitions/PolicyId"
+          }
+        }
+      ],
+      "compiledCode": "58ad0101003232323232322322533300432323232323253233300b3370e9001001099191919251533300e3004300f375400e2a66602260206ea801c5261616301130120023010001300d37540062a6660166002004264649454ccc030c008c034dd50028a99980798071baa00514985858dd7180798069baa00316370e900018051baa001300c300d002300b001300b00230090013006375400229309b2b1bae0015734aae7555cf2ab9f5742ae881",
+      "hash": "3ca5745aa86256984c1e70446a0e9dac19b9436e522bc90e33e6074f"
+    },
+    {
       "title": "smtt.tag.mint",
       "redeemer": {
         "title": "_r",
@@ -183,33 +208,8 @@
           }
         }
       ],
-      "compiledCode": "58ad0101003232323232322322533300432323232323253233300b3001002132324a2a6660186004601a6ea801454ccc03cc038dd50028a4c2c2c6eb8c03cc034dd50018a99980599b87480080084c8c8c8c928a999807180218079baa007153330113010375400e2930b0b18089809001180800098069baa00316370e900018051baa001300c300d002300b001300b00230090013006375400229309b2b1bae0015734aae7555cf2ab9f5742ae881",
-      "hash": "9d358c89264e513376ea4ea1a5c62fe3dd1767a5520ac6529ea50dca"
-    },
-    {
-      "title": "smtt.tag.spend",
-      "datum": {
-        "title": "_d",
-        "schema": {
-          "$ref": "#/definitions/Void"
-        }
-      },
-      "redeemer": {
-        "title": "_r",
-        "schema": {
-          "$ref": "#/definitions/Void"
-        }
-      },
-      "parameters": [
-        {
-          "title": "_stt_mint",
-          "schema": {
-            "$ref": "#/definitions/PolicyId"
-          }
-        }
-      ],
-      "compiledCode": "58ad0101003232323232322322533300432323232323253233300b3001002132324a2a6660186004601a6ea801454ccc03cc038dd50028a4c2c2c6eb8c03cc034dd50018a99980599b87480080084c8c8c8c928a999807180218079baa007153330113010375400e2930b0b18089809001180800098069baa00316370e900018051baa001300c300d002300b001300b00230090013006375400229309b2b1bae0015734aae7555cf2ab9f5742ae881",
-      "hash": "9d358c89264e513376ea4ea1a5c62fe3dd1767a5520ac6529ea50dca"
+      "compiledCode": "58ad0101003232323232322322533300432323232323253233300b3370e9001001099191919251533300e3004300f375400e2a66602260206ea801c5261616301130120023010001300d37540062a6660166002004264649454ccc030c008c034dd50028a99980798071baa00514985858dd7180798069baa00316370e900018051baa001300c300d002300b001300b00230090013006375400229309b2b1bae0015734aae7555cf2ab9f5742ae881",
+      "hash": "3ca5745aa86256984c1e70446a0e9dac19b9436e522bc90e33e6074f"
     },
     {
       "title": "smtt.tag.else",
@@ -221,17 +221,39 @@
           }
         }
       ],
-      "compiledCode": "58ad0101003232323232322322533300432323232323253233300b3001002132324a2a6660186004601a6ea801454ccc03cc038dd50028a4c2c2c6eb8c03cc034dd50018a99980599b87480080084c8c8c8c928a999807180218079baa007153330113010375400e2930b0b18089809001180800098069baa00316370e900018051baa001300c300d002300b001300b00230090013006375400229309b2b1bae0015734aae7555cf2ab9f5742ae881",
-      "hash": "9d358c89264e513376ea4ea1a5c62fe3dd1767a5520ac6529ea50dca"
+      "compiledCode": "58ad0101003232323232322322533300432323232323253233300b3370e9001001099191919251533300e3004300f375400e2a66602260206ea801c5261616301130120023010001300d37540062a6660166002004264649454ccc030c008c034dd50028a99980798071baa00514985858dd7180798069baa00316370e900018051baa001300c300d002300b001300b00230090013006375400229309b2b1bae0015734aae7555cf2ab9f5742ae881",
+      "hash": "3ca5745aa86256984c1e70446a0e9dac19b9436e522bc90e33e6074f"
     }
   ],
   "definitions": {
+    "Bool": {
+      "title": "Bool",
+      "anyOf": [
+        {
+          "title": "False",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": []
+        },
+        {
+          "title": "True",
+          "dataType": "constructor",
+          "index": 1,
+          "fields": []
+        }
+      ]
+    },
     "ByteArray": {
-      "title": "ByteArray",
       "dataType": "bytes"
     },
     "Int": {
       "dataType": "integer"
+    },
+    "List$ByteArray": {
+      "dataType": "list",
+      "items": {
+        "$ref": "#/definitions/ByteArray"
+      }
     },
     "PolicyId": {
       "title": "PolicyId",
@@ -267,6 +289,38 @@
             {
               "title": "output_index",
               "$ref": "#/definitions/Int"
+            }
+          ]
+        }
+      ]
+    },
+    "smtt/RunDatum": {
+      "title": "RunDatum",
+      "anyOf": [
+        {
+          "title": "RunDatum",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "started",
+              "$ref": "#/definitions/Bool"
+            }
+          ]
+        }
+      ]
+    },
+    "smtt/TagDatum": {
+      "title": "TagDatum",
+      "anyOf": [
+        {
+          "title": "TagDatum",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "pool",
+              "$ref": "#/definitions/List$ByteArray"
             }
           ]
         }
