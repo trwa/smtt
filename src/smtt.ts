@@ -19,7 +19,7 @@ import {
   Utxo,
 } from "https://deno.land/x/lucid@0.20.9/mod.ts";
 
-import {findPool, sleep} from "./utils.ts";
+import {findPool, sleep, tagMake} from "./utils.ts";
 
 class SmttMake {
   private utxo: Utxo;
@@ -148,6 +148,79 @@ class SmttMake {
   public async add(tagName: Uint8Array): Promise<void> {
     const pool = await findPool(this.tagMint, this.tagSpend, tagName);
     console.log(pool);
+
+    if (pool === null) {
+      console.error("Pool not found");
+      return;
+    }
+
+    //const lo = array32ToBigInt(pool.lower);
+    //const hi = array32ToBigInt(pool.upper);
+    //const tg = array32ToBigInt(tagName);
+
+    let newPool = pool.pool.concat([toHex(tagName)]);
+    // Sort the new pool
+    newPool = newPool.sort((a, b) => {
+      return a.localeCompare(b);
+    });
+
+    let tx: Tx = lucid.newTx()
+      //.attachScript(this.tagMint)
+      .mint({ [tagMake(this.tagMint, tagName)]: 1n }, Data.void());
+
+    tx = tx
+      .collectFrom([pool.utxo], Data.void())
+      .payToContract(
+        lucid.utils.scriptToAddress(this.tagSpend),
+        {
+          Inline: Data.to({ pool: newPool }, SmttTagSpend._d),
+          scriptRef: this.tagSpend,
+        },
+        {
+          [tagMake(this.tagMint, pool.lower)]: 1n,
+          [tagMake(this.tagMint, pool.upper)]: 1n,
+        },
+      );
+
+    tx = await this.propagateStt(tx);
+    tx = this.sendTagToContract(tx, tagName);
+
+    const complete: TxComplete = await tx.commit();
+    const signed: TxSigned = await complete.sign().commit();
+    const hash: string = await signed.submit();
+    console.log(hash);
+  }
+
+  private async propagateStt(tx: Tx) {
+    const policy = Hasher.hashScript(this.sttMint);
+    const stt = policy + fromText("stt");
+    const addressRunSpend = lucid.utils.scriptToAddress(this.runSpend);
+    return tx
+      .collectFrom(
+        await lucid.utxosAtWithUnit(addressRunSpend, stt),
+        Data.void(),
+      )
+      .payToContract(
+        addressRunSpend,
+        {
+          Inline: Data.to({ started: true }, SmttRunSpend._d),
+          scriptRef: this.runSpend,
+        },
+        { [stt]: 1n },
+      );
+  }
+
+  private sendTagToContract(tx: Tx, tagName: Uint8Array) {
+    const addressContract = lucid.utils.scriptToAddress(this.contract);
+    return tx
+      .payToContract(
+        addressContract,
+        {
+          Inline: Data.void(),
+          scriptRef: this.contract,
+        },
+        { [tagMake(this.tagMint, tagName)]: 1n },
+      );
   }
 }
 
@@ -161,9 +234,16 @@ if (import.meta.main) {
 
   const process = new SmttMake(utxo, makeContract, 1n);
 
+  const name1 = new Uint8Array(32);
+  name1[0] = 0x01;
+  const name2 = new Uint8Array(32);
+  name2[0] = 0x02;
+
   await process.fund();
-  await sleep(60);
+  await sleep(120);
   await process.start();
-  await sleep(60);
-  await process.add(new Uint8Array(32));
+  await sleep(120);
+  await process.add(name1);
+  await sleep(120);
+  await process.add(name2);
 }

@@ -68,7 +68,7 @@ export async function findPool(
     const utxoUpper = (await lucid.utxosAtWithUnit(spendAddress, upperTag))
       .at(0);
 
-    if (utxoLower.outputIndex === utxoUpper.outputIndex) {
+    if (utxoLower?.outputIndex === utxoUpper?.outputIndex) {
       return {
         utxo: utxoLower,
         lower: lower,
