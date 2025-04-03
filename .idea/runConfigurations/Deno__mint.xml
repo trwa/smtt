@@ -1,6 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Deno: mint" type="DenoConfigurationType" singleton="false" inputPath="$PROJECT_DIR$/src/mint.ts" programParameters="run --allow-net --allow-read">
-    <option name="allowRunningInParallel" value="true" />
-    <method v="2" />
-  </configuration>
-</component>
