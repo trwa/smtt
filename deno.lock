@@ -9,6 +9,7 @@
     "jsr:@std/encoding@1.0.5": "1.0.5",
     "jsr:@std/io@*": "0.224.3",
     "jsr:@std/streams@^1.0.8": "1.0.9",
+    "npm:@harmoniclabs/uint8array-utils@1.0.4": "1.0.4",
     "npm:@meshsdk/core@1.8.0": "1.8.0",
     "npm:dotenv@*": "16.4.7"
   },

@@ -1,13 +1,13 @@
 import {CardanoTransactionOutputReference, SimpleTrueSpend, SmttRunSpend, SmttSttMint, SmttTagMint, SmttTagSpend,} from "./simple/plutus.ts";
 import {lucid} from "./config.ts";
 import {fromText} from "https://deno.land/x/lucid@0.20.4/src/utils/mod.ts";
-import {Data, Hasher, Script, Tx, TxComplete, TxSigned, Utxo,} from "https://deno.land/x/lucid@0.20.9/mod.ts";
+import {Data, Hasher, Script, toHex, Tx, TxComplete, TxSigned, Utxo,} from "https://deno.land/x/lucid@0.20.9/mod.ts";
 
 class Process {
   private utxo: Utxo;
   private readonly sttMint: Script;
-  private tagMint: Script;
-  private tagSpend: Script;
+  private readonly tagMint: Script;
+  private readonly tagSpend: Script;
   private contract: Script;
   private readonly runSpend: Script;
 
@@ -48,9 +48,8 @@ class Process {
     this.runSpend = runSpend;
   }
 
-  public async start(): Promise<void> {
+  public async fund(): Promise<void> {
     const policy = Hasher.hashScript(this.sttMint);
-    const address = lucid.utils.scriptToAddress(this.runSpend);
     const stt = policy + fromText("stt");
 
     let tx: Tx = lucid.newTx()
@@ -63,7 +62,8 @@ class Process {
 
     tx = tx
       .payToContract(
-        address,
+        lucid.utils.scriptToAddress(this.runSpend),
+        // FIXME: Encode False (or None) in the Datum
         { Inline: Data.void(), scriptRef: this.runSpend },
         { [stt]: 1n },
       );
@@ -73,6 +73,60 @@ class Process {
     const hash: string = await signed.submit();
     console.log(hash);
   }
+
+  public async start(): Promise<void> {
+    const sttPolicy = Hasher.hashScript(this.sttMint);
+    const stt = sttPolicy + fromText("stt");
+
+    const tagPolicy = Hasher.hashScript(this.tagMint);
+    const lower: Uint8Array = new Uint8Array(32);
+    const upper: Uint8Array = new Uint8Array(32);
+    for (let i = 0; i < 32; i++) {
+      lower[i] = 0x00;
+      upper[i] = 0xff;
+    }
+    const tagLower = tagPolicy + toHex(lower);
+    const tagUpper = tagPolicy + toHex(upper);
+
+    let tx: Tx = lucid.newTx()
+      .attachScript(this.tagMint)
+      .mint({ [tagLower]: 1n, [tagUpper]: 1n }, Data.void());
+
+    const addressRunSpend = lucid.utils.scriptToAddress(this.runSpend);
+    tx = tx
+      .collectFrom(
+        await lucid.utxosAtWithUnit(addressRunSpend, stt),
+        Data.void(),
+      )
+      .payToContract(
+        addressRunSpend,
+        // FIXME: Encode True (or Some(..)) in the Datum
+        { Inline: Data.void(), scriptRef: this.runSpend },
+        { [stt]: 1n },
+      );
+
+    tx = tx
+      .payToContract(
+        lucid.utils.scriptToAddress(this.tagSpend),
+        // FIXME: Encode [] in the Datum
+        { Inline: Data.void(), scriptRef: this.runSpend },
+        { [tagLower]: 1n, [tagUpper]: 1n },
+      );
+
+    const complete: TxComplete = await tx.commit();
+    const signed: TxSigned = await complete.sign().commit();
+    const hash: string = await signed.submit();
+    console.log(hash);
+  }
+
+  public async add(tag: string): Promise<void> {
+    return;
+  }
+}
+
+async function sleep(seconds: number) {
+  console.log(`delay ${seconds}s...`);
+  await new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 }
 
 if (import.meta.main) {
@@ -84,5 +138,8 @@ if (import.meta.main) {
     (policy: Script) => new SimpleTrueSpend(Hasher.hashScript(policy)),
     10n,
   );
+
+  await mint.fund();
+  await sleep(120);
   await mint.start();
 }
