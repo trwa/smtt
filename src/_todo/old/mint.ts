@@ -2,7 +2,7 @@ import {getLucidInstance, serializeDatum} from "./common.ts";
 import {fromText, Hasher} from "https://deno.land/x/lucid@0.20.4/src/mod.ts";
 import {Data, Lucid, Script} from "https://deno.land/x/lucid@0.20.4/mod.ts";
 import {makeKey32, makeRandomId, makeStorage, waitSeconds} from "./single.ts";
-import {BenchmarkLocalSpend, BenchmarkStorage, BenchmarkTokenMint,} from "../../benchmark/plutus.ts";
+import {BenchmarkLocalSpend, BenchmarkStorage, BenchmarkTokenMint,} from "../../../benchmark/plutus.ts";
 import {parse, stringify} from "jsr:@std/csv";
 
 function makeAsset(policy: Script, name: string, amount: bigint) {

@@ -1,5 +1,5 @@
 import {Wallet} from './config';
-import buildOutput from "./simple/plutus.json";
+import buildOutput from "../../src/simple/plutus.json";
 import {Data, PlutusScript, resolvePlutusScriptAddress, Transaction} from "@meshsdk/core";
 
 const scriptCbor = buildOutput.validators[0].compiledCode;

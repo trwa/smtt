@@ -1,6 +1,6 @@
 import * as dotenv from "npm:dotenv";
 import * as process from "node:process";
-import {Blockfrost, Lucid, Provider,} from "https://deno.land/x/lucid@0.20.4/mod.ts";
+import {Blockfrost, Lucid, Provider,} from "https://deno.land/x/lucid@0.20.9/mod.ts";
 
 dotenv.config();
 

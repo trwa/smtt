@@ -1,4 +1,4 @@
-import {Contract} from "../../framework/contract.ts";
+import {Contract} from "../../../framework/contract.ts";
 import {getLucidInstance} from "../old/common.ts";
 import {Constr, Data, fromText,} from "https://deno.land/x/lucid@0.10.7/src/mod.ts";
 

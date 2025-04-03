@@ -1,5 +1,5 @@
 import {getLucidInstance, serializeDatum, stringToHex} from "./common.ts";
-import {BenchmarkLocalSpend, BenchmarkStorage, BenchmarkTokenMint, ByteArray,} from "../../benchmark/plutus.ts";
+import {BenchmarkLocalSpend, BenchmarkStorage, BenchmarkTokenMint, ByteArray,} from "../../../benchmark/plutus.ts";
 import {Data, Lucid, Script} from "https://deno.land/x/lucid@0.20.4/mod.ts";
 import {parse, stringify} from "jsr:@std/csv";
 import {fromText, Hasher} from "https://deno.land/x/lucid@0.20.4/src/mod.ts";
