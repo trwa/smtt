@@ -3,7 +3,7 @@ import {lucid} from "./config.ts";
 import {fromText} from "https://deno.land/x/lucid@0.20.4/src/utils/mod.ts";
 import {Data, Hasher, Script, toHex, Tx, TxComplete, TxSigned, Utxo,} from "https://deno.land/x/lucid@0.20.9/mod.ts";
 
-class Process {
+class SMTT {
   private utxo: Utxo;
   private readonly sttMint: Script;
   private readonly tagMint: Script;
@@ -13,7 +13,7 @@ class Process {
 
   public constructor(
     utxo: Utxo,
-    v: (policy: Script) => Script,
+    makeContract: (smttPolicy: Script) => Script,
     splitThreshold: bigint,
   ) {
     const reference: CardanoTransactionOutputReference = {
@@ -29,7 +29,7 @@ class Process {
     const tagSpend = new SmttTagSpend(sttPolicy);
     const tagSpendAddres = fromText(lucid.utils.scriptToAddress(tagSpend));
 
-    const contract = v(tagMint);
+    const contract = makeContract(tagMint);
     const contractAddress = fromText(lucid.utils.scriptToAddress(contract));
 
     const runSpend = new SmttRunSpend(
@@ -129,17 +129,17 @@ async function sleep(seconds: number) {
   await new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 }
 
+function makeContract(smttMint: Script): Script {
+  return new SimpleTrueSpend(Hasher.hashScript(smttMint));
+}
+
 if (import.meta.main) {
   const utxo = (await lucid.wallet.getUtxos())[0];
   console.log(utxo);
 
-  const mint = new Process(
-    utxo,
-    (policy: Script) => new SimpleTrueSpend(Hasher.hashScript(policy)),
-    10n,
-  );
+  const process = new SMTT(utxo, makeContract, 10n);
 
-  await mint.fund();
+  await process.fund();
   await sleep(120);
-  await mint.start();
+  await process.start();
 }
