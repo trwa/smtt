@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="smtt" type="DenoConfigurationType" inputPath="$PROJECT_DIR$/src/smtt.ts" programParameters="run --allow-net --allow-read --allow-env">
+    <method v="2" />
+  </configuration>
+</component>
