@@ -1,5 +1,5 @@
 import {C, TxSigned} from "https://deno.land/x/lucid@0.10.7/src/mod.ts";
-import {queryTx, getLucidInstance} from "../src/common.ts";
+import {queryTx, getLucidInstance} from "../old/common.ts";
 
 if (import.meta.main) {
   const query = queryTx();

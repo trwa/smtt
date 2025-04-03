@@ -1,8 +1,8 @@
 import {C, Data, Tx, TxComplete, TxSigned} from "https://deno.land/x/lucid@0.10.7/src/mod.ts";
-import {getLucidInstance} from "../src/common.ts";
-import {ContractDatum} from "../framework/internal/datum.ts";
-import {Contract} from "../framework/contract.ts";
-import {makeStartDatum, Start} from "../framework/start.ts";
+import {getLucidInstance} from "../old/common.ts";
+import {ContractDatum} from "../../framework/internal/datum.ts";
+import {Contract} from "../../framework/contract.ts";
+import {makeStartDatum, Start} from "../../framework/start.ts";
 import {Buffer} from "jsr:@std/io/buffer";
 import {
     llBlake2b256,
@@ -14,7 +14,7 @@ import {
     llTxSignedHash,
     llTxSignedToBytes,
     serializeTxBody
-} from "../framework/ll.ts";
+} from "../../framework/ll.ts";
 
 if (import.meta.main) {
     const lucid = await lucid();

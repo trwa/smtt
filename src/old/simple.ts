@@ -1,5 +1,5 @@
-import {getLucidInstance} from "./src/common.ts";
-import {Contract} from "./framework/contract.ts";
+import {getLucidInstance} from "./common.ts";
+import {Contract} from "../../framework/contract.ts";
 import {Constr, Data, fromText, Lucid,} from "https://deno.land/x/lucid@0.10.7/src/mod.ts";
 
 function emptyDatum(address: string): string {
