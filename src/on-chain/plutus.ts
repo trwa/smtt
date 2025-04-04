@@ -3,7 +3,7 @@ import {
   applyParamsToScript,
   Data,
   Script,
-} from "https://deno.land/x/lucid@0.20.4/mod.ts";
+} from "https://deno.land/x/lucid@0.20.9/mod.ts";
 
 export type Bool = boolean;
 export type ByteArray = string;

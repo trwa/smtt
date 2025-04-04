@@ -1,6 +1,6 @@
 import {Data, Hasher, Script, toHex, Utxo,} from "https://deno.land/x/lucid@0.20.9/mod.ts";
 import {lucid} from "./config.ts";
-import {SmttTagSpend} from "./smtt/plutus.ts";
+import {SmttTagSpend} from "./on-chain/plutus.ts";
 
 export function tagNameMin(): Uint8Array {
   const lower: Uint8Array = new Uint8Array(32);
