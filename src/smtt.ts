@@ -1,25 +1,8 @@
-import {
-  CardanoTransactionOutputReference,
-  SimpleTrueSpend,
-  SmttRunSpend,
-  SmttSttMint,
-  SmttTagMint,
-  SmttTagSpend,
-} from "./smtt/plutus.ts";
+import {CardanoTransactionOutputReference, SimpleTrueSpend, SmttRunSpend, SmttSttMint, SmttTagMint, SmttTagSpend,} from "./smtt/plutus.ts";
 import {lucid} from "./config.ts";
-import {
-  Data,
-  fromText,
-  Hasher,
-  Script,
-  toHex,
-  Tx,
-  TxComplete,
-  TxSigned,
-  Utxo,
-} from "https://deno.land/x/lucid@0.20.9/mod.ts";
+import {Data, fromText, Hasher, Script, toHex, Tx, TxComplete, TxSigned, Utxo,} from "https://deno.land/x/lucid@0.20.9/mod.ts";
 
-import {findPool, sleep, tagMake} from "./utils.ts";
+import {findTagSpendState, sleep, tagMake, tagNameMax, tagNameMin,} from "./utils.ts";
 
 class SmttMake {
   private utxo: Utxo;
@@ -97,129 +80,119 @@ class SmttMake {
   }
 
   public async start(): Promise<void> {
-    const sttPolicy = Hasher.hashScript(this.sttMint);
-    const stt = sttPolicy + fromText("stt");
-
-    const tagPolicy = Hasher.hashScript(this.tagMint);
-    const lower: Uint8Array = new Uint8Array(32);
-    const upper: Uint8Array = new Uint8Array(32);
-    for (let i = 0; i < 32; i++) {
-      lower[i] = 0x00;
-      upper[i] = 0xff;
-    }
-    const tagLower = tagPolicy + toHex(lower);
-    const tagUpper = tagPolicy + toHex(upper);
-
     let tx: Tx = lucid.newTx()
-      .attachScript(this.tagMint)
-      .mint({ [tagLower]: 1n, [tagUpper]: 1n }, Data.void());
-
-    const addressRunSpend = lucid.utils.scriptToAddress(this.runSpend);
-    tx = tx
-      .collectFrom(
-        await lucid.utxosAtWithUnit(addressRunSpend, stt),
-        Data.void(),
-      )
-      .payToContract(
-        addressRunSpend,
-        {
-          Inline: Data.to({ started: true }, SmttRunSpend._d),
-          scriptRef: this.runSpend,
-        },
-        { [stt]: 1n },
-      );
-
-    tx = tx
-      .payToContract(
-        lucid.utils.scriptToAddress(this.tagSpend),
-        {
-          Inline: Data.to({ pool: [] }, SmttTagSpend._d),
-          scriptRef: this.tagSpend,
-        },
-        { [tagLower]: 1n, [tagUpper]: 1n },
-      );
-
-    const complete: TxComplete = await tx.commit();
-    const signed: TxSigned = await complete.sign().commit();
-    const hash: string = await signed.submit();
-    console.log(hash);
+      .attachScript(this.tagMint);
+    tx = this.mintNewTag(tx, tagNameMin());
+    tx = this.mintNewTag(tx, tagNameMax());
+    tx = await this.propagateSttToRunSpend(tx);
+    tx = this.fundPool(tx);
+    await this.finishTx(tx);
   }
 
   public async add(tagName: Uint8Array): Promise<void> {
-    const pool = await findPool(this.tagMint, this.tagSpend, tagName);
-    console.log(pool);
-
-    if (pool === null) {
+    const tagSpendState = await findTagSpendState(
+      this.tagMint,
+      this.tagSpend,
+      tagName,
+    );
+    if (tagSpendState === null) {
       console.error("Pool not found");
       return;
     }
+    console.log(tagSpendState);
 
-    //const lo = array32ToBigInt(pool.lower);
-    //const hi = array32ToBigInt(pool.upper);
-    //const tg = array32ToBigInt(tagName);
-
-    let newPool = pool.pool.concat([toHex(tagName)]);
-    // Sort the new pool
-    newPool = newPool.sort((a, b) => {
-      return a.localeCompare(b);
-    });
-
-    let tx: Tx = lucid.newTx()
-      //.attachScript(this.tagMint)
-      .mint({ [tagMake(this.tagMint, tagName)]: 1n }, Data.void());
-
-    tx = tx
-      .collectFrom([pool.utxo], Data.void())
-      .payToContract(
-        lucid.utils.scriptToAddress(this.tagSpend),
-        {
-          Inline: Data.to({ pool: newPool }, SmttTagSpend._d),
-          scriptRef: this.tagSpend,
-        },
-        {
-          [tagMake(this.tagMint, pool.lower)]: 1n,
-          [tagMake(this.tagMint, pool.upper)]: 1n,
-        },
-      );
-
-    tx = await this.propagateStt(tx);
+    let tx: Tx = lucid.newTx();
+    tx = this.mintNewTag(tx, tagName);
+    // TODO: check if the pool is too big and, in case, split it
+    tx = this.propagatePoolNoSplit(
+      tx,
+      tagSpendState.utxo,
+      tagSpendState.lower,
+      tagSpendState.upper,
+      tagSpendState.pool,
+      tagName,
+    );
+    tx = await this.propagateSttToRunSpend(tx);
     tx = this.sendTagToContract(tx, tagName);
+    await this.finishTx(tx);
+  }
 
+  private async finishTx(tx: Tx): Promise<void> {
     const complete: TxComplete = await tx.commit();
     const signed: TxSigned = await complete.sign().commit();
     const hash: string = await signed.submit();
     console.log(hash);
   }
 
-  private async propagateStt(tx: Tx) {
-    const policy = Hasher.hashScript(this.sttMint);
-    const stt = policy + fromText("stt");
+  private mintNewTag(tx: Tx, tagName: Uint8Array) {
+    const tag = tagMake(this.tagMint, tagName);
+    const redeemer = Data.void();
+    return tx.mint({ [tag]: 1n }, redeemer);
+  }
+
+  private async propagateSttToRunSpend(tx: Tx) {
     const addressRunSpend = lucid.utils.scriptToAddress(this.runSpend);
+    const stt = Hasher.hashScript(this.sttMint) + fromText("stt");
+    const utxos = await lucid.utxosAtWithUnit(addressRunSpend, stt);
+    const datum = Data.to({ started: true }, SmttRunSpend._d);
+    const redeemer = Data.void();
     return tx
-      .collectFrom(
-        await lucid.utxosAtWithUnit(addressRunSpend, stt),
-        Data.void(),
-      )
+      .collectFrom(utxos, redeemer)
       .payToContract(
         addressRunSpend,
-        {
-          Inline: Data.to({ started: true }, SmttRunSpend._d),
-          scriptRef: this.runSpend,
-        },
+        { Inline: datum, scriptRef: this.runSpend },
         { [stt]: 1n },
       );
   }
 
+  private propagatePoolNoSplit(
+    tx: Tx,
+    utxo: Utxo,
+    lower: Uint8Array,
+    upper: Uint8Array,
+    pool: string[],
+    tagName: Uint8Array,
+  ) {
+    const tagSpendAddress = lucid.utils.scriptToAddress(this.tagSpend);
+    const tagPolicy = Hasher.hashScript(this.tagMint);
+    const tagLower = tagPolicy + toHex(lower);
+    const tagUpper = tagPolicy + toHex(upper);
+    const newPool = pool.concat([toHex(tagName)]).sort((lhs, rhs) =>
+      lhs.localeCompare(rhs)
+    );
+    const datum = Data.to({ pool: newPool }, SmttTagSpend._d);
+    return tx
+      .collectFrom([utxo], Data.void())
+      .payToContract(
+        tagSpendAddress,
+        { Inline: datum, scriptRef: this.tagSpend },
+        { [tagLower]: 1n, [tagUpper]: 1n },
+      );
+  }
+
+  private fundPool(tx: Tx) {
+    const tagSpendAddress = lucid.utils.scriptToAddress(this.tagSpend);
+    const datum = Data.to({ pool: [] }, SmttTagSpend._d);
+    const tagLower = tagMake(this.tagMint, tagNameMin());
+    const tagUpper = tagMake(this.tagMint, tagNameMax());
+    return tx
+      .payToContract(tagSpendAddress, {
+        Inline: datum,
+        scriptRef: this.tagSpend,
+      }, { [tagLower]: 1n, [tagUpper]: 1n });
+  }
   private sendTagToContract(tx: Tx, tagName: Uint8Array) {
     const addressContract = lucid.utils.scriptToAddress(this.contract);
+    const tag = tagMake(this.tagMint, tagName);
+    const datum = Data.void();
     return tx
       .payToContract(
         addressContract,
         {
-          Inline: Data.void(),
+          Inline: datum,
           scriptRef: this.contract,
         },
-        { [tagMake(this.tagMint, tagName)]: 1n },
+        { [tag]: 1n },
       );
   }
 }

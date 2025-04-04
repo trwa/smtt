@@ -40,7 +40,7 @@ export function bigIntToArray32(value: bigint): Uint8Array {
   return array;
 }
 
-export async function findPool(
+export async function findTagSpendState(
   tagMint: Script,
   tagSpend: Script,
   tag: Uint8Array,
