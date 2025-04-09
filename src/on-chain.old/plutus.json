@@ -16,7 +16,7 @@
       "datum": {
         "title": "_d",
         "schema": {
-          "$ref": "#/definitions/smtt~1validators~1RunDatum"
+          "$ref": "#/definitions/smtt~1validators~1run~1RunDatum"
         }
       },
       "redeemer": {
@@ -153,7 +153,7 @@
       "datum": {
         "title": "_d",
         "schema": {
-          "$ref": "#/definitions/smtt~1validators~1KeyDatum"
+          "$ref": "#/definitions/smtt~1validators~1tag~1KeyDatum"
         }
       },
       "redeemer": {
@@ -261,23 +261,7 @@
         }
       ]
     },
-    "smtt/validators/KeyDatum": {
-      "title": "KeyDatum",
-      "anyOf": [
-        {
-          "title": "KeyDatum",
-          "dataType": "constructor",
-          "index": 0,
-          "fields": [
-            {
-              "title": "keys",
-              "$ref": "#/definitions/List$AssetName"
-            }
-          ]
-        }
-      ]
-    },
-    "smtt/validators/RunDatum": {
+    "smtt/validators/run/RunDatum": {
       "title": "RunDatum",
       "anyOf": [
         {
@@ -288,6 +272,22 @@
             {
               "title": "started",
               "$ref": "#/definitions/Bool"
+            }
+          ]
+        }
+      ]
+    },
+    "smtt/validators/tag/KeyDatum": {
+      "title": "KeyDatum",
+      "anyOf": [
+        {
+          "title": "KeyDatum",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "keys",
+              "$ref": "#/definitions/List$AssetName"
             }
           ]
         }

@@ -2,13 +2,13 @@ use aiken/crypto.{ScriptHash}
 use cardano/assets.{PolicyId}
 use cardano/transaction.{OutputReference, Transaction, find_input}
 use smtt/io.{get_boundary}
-use smtt/validators.{
-  KeyDatum, RunDatum, key_mint, key_spend, run_spend, stt_mint,
-}
+use smtt/validators/run.{RunDatum} as vrun
+use smtt/validators/stt as vstt
+use smtt/validators/tag.{KeyDatum} as vtag
 
 validator stt(utxo: OutputReference) {
   mint(_r: Void, policy: PolicyId, self: Transaction) {
-    get_boundary(self) |> stt_mint(policy, utxo)
+    get_boundary(self) |> vstt.stt_mint(policy, utxo)
   }
 
   else(_) {
@@ -32,7 +32,7 @@ validator run(
     expect Some(input) = find_input(self.inputs, utxo)
     expect Some(hash) = input.output.reference_script
     get_boundary(self)
-      |> run_spend(stt_mint, hash, tag_mint, tag_spend, split_threshold)
+      |> vrun.run_spend(stt_mint, hash, tag_mint, tag_spend, split_threshold)
   }
 
   else(_) {
@@ -42,11 +42,11 @@ validator run(
 
 validator tag(stt_mint: PolicyId) {
   mint(_r: Void, _p: PolicyId, self: Transaction) {
-    get_boundary(self) |> key_mint(stt_mint)
+    get_boundary(self) |> vtag.key_mint(stt_mint)
   }
 
   spend(_d: Option<KeyDatum>, _r: Void, _o: OutputReference, self: Transaction) {
-    get_boundary(self) |> key_spend(stt_mint)
+    get_boundary(self) |> vtag.key_spend(stt_mint)
   }
 
   else(_) {

@@ -17,8 +17,8 @@ export type CardanoTransactionOutputReference = {
   transactionId: ByteArray;
   outputIndex: Int;
 };
-export type SmttValidatorsKeyDatum = { keys: ListAssetName };
-export type SmttValidatorsRunDatum = { started: Bool };
+export type SmttValidatorsRunRunDatum = { started: Bool };
+export type SmttValidatorsTagKeyDatum = { keys: ListAssetName };
 
 const definitions = {
   "AssetName": { "title": "AssetName", "dataType": "bytes" },
@@ -62,22 +62,22 @@ const definitions = {
       }, { "title": "outputIndex", "$ref": "#/definitions/Int" }],
     }],
   },
-  "smtt/validators/KeyDatum": {
-    "title": "KeyDatum",
-    "anyOf": [{
-      "title": "KeyDatum",
-      "dataType": "constructor",
-      "index": 0,
-      "fields": [{ "title": "keys", "$ref": "#/definitions/List$AssetName" }],
-    }],
-  },
-  "smtt/validators/RunDatum": {
+  "smtt/validators/run/RunDatum": {
     "title": "RunDatum",
     "anyOf": [{
       "title": "RunDatum",
       "dataType": "constructor",
       "index": 0,
       "fields": [{ "title": "started", "$ref": "#/definitions/Bool" }],
+    }],
+  },
+  "smtt/validators/tag/KeyDatum": {
+    "title": "KeyDatum",
+    "anyOf": [{
+      "title": "KeyDatum",
+      "dataType": "constructor",
+      "index": 0,
+      "fields": [{ "title": "keys", "$ref": "#/definitions/List$AssetName" }],
     }],
   },
 };
@@ -90,7 +90,7 @@ export interface StorageRunSpend {
     _contractSpend: ScriptHash,
     splitThreshold: Int,
   ): Script;
-  _d: SmttValidatorsRunDatum;
+  _d: SmttValidatorsRunRunDatum;
   _r: Void;
 }
 
@@ -125,7 +125,7 @@ export const StorageRunSpend = Object.assign(
   },
   {
     _d: {
-      "shape": { "$ref": "#/definitions/smtt/validators/RunDatum" },
+      "shape": { "$ref": "#/definitions/smtt/validators/run/RunDatum" },
       definitions,
     },
   },
@@ -186,7 +186,7 @@ export const StorageTagMint = Object.assign(
 
 export interface StorageTagSpend {
   new (sttMint: PolicyId): Script;
-  _d: SmttValidatorsKeyDatum;
+  _d: SmttValidatorsTagKeyDatum;
   _r: Void;
 }
 
@@ -209,7 +209,7 @@ export const StorageTagSpend = Object.assign(
   },
   {
     _d: {
-      "shape": { "$ref": "#/definitions/smtt/validators/KeyDatum" },
+      "shape": { "$ref": "#/definitions/smtt/validators/tag/KeyDatum" },
       definitions,
     },
   },
