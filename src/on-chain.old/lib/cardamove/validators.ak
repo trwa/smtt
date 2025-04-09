@@ -78,7 +78,7 @@ pub fn run_spend(
   run_hash: ScriptHash,
   key_policy: PolicyId,
   key_hash: ScriptHash,
-  max_size: Int,
+  _max_size: Int,
 ) -> Bool {
   // -------------------------------------------------------------------------------------------------------------------
   // Condition. There is only one invocation of the script in the transaction
@@ -198,8 +198,12 @@ pub fn run_spend(
     expect policy1 == key_policy
     expect policy2 == key_policy
     expect and {
-        @"00000000000000000000000000000000" == bytearray.to_hex(key_lower),
-        @"ffffffffffffffffffffffffffffffff" == bytearray.to_hex(key_upper),
+        @"0000000000000000000000000000000000000000000000000000000000000000" == bytearray.to_hex(
+          key_lower,
+        ),
+        @"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" == bytearray.to_hex(
+          key_upper,
+        ),
       }
     //
     // -----------------------------------------------------------------------------------------------------------------

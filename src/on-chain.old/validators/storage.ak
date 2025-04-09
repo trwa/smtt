@@ -4,11 +4,11 @@ use cardamove/validators.{
   KeyDatum, RunDatum, key_mint, key_spend, run_spend, stt_mint,
 }
 use cardano/assets.{PolicyId}
-use cardano/transaction.{OutputReference, Transaction}
+use cardano/transaction.{OutputReference, Transaction, find_input}
 
-validator stt(output_reference: OutputReference) {
-  mint(_r, policy_id: PolicyId, tx: Transaction) {
-    get_boundary(tx) |> stt_mint(policy_id, output_reference)
+validator stt(utxo: OutputReference) {
+  mint(_r: Void, policy: PolicyId, self: Transaction) {
+    get_boundary(self) |> stt_mint(policy, utxo)
   }
 
   else(_) {
@@ -17,15 +17,22 @@ validator stt(output_reference: OutputReference) {
 }
 
 validator run(
-  stt_policy: PolicyId,
-  run_hash: ScriptHash,
-  key_policy: PolicyId,
-  key_hash: ScriptHash,
-  max_size: Int,
+  stt_mint: PolicyId,
+  tag_mint: PolicyId,
+  tag_spend: ScriptHash,
+  _contract_spend: ScriptHash,
+  split_threshold: Int,
 ) {
-  spend(_d: Option<RunDatum>, _r, _o, tx: Transaction) {
-    get_boundary(tx)
-      |> run_spend(stt_policy, run_hash, key_policy, key_hash, max_size)
+  spend(
+    _d: Option<RunDatum>,
+    _r: Void,
+    utxo: OutputReference,
+    self: Transaction,
+  ) {
+    expect Some(input) = find_input(self.inputs, utxo)
+    expect Some(hash) = input.output.reference_script
+    get_boundary(self)
+      |> run_spend(stt_mint, hash, tag_mint, tag_spend, split_threshold)
   }
 
   else(_) {
@@ -33,13 +40,13 @@ validator run(
   }
 }
 
-validator key(stt_policy: PolicyId) {
-  mint(_r, _p, tx: Transaction) {
-    get_boundary(tx) |> key_mint(stt_policy)
+validator tag(stt_mint: PolicyId) {
+  mint(_r: Void, _p: PolicyId, self: Transaction) {
+    get_boundary(self) |> key_mint(stt_mint)
   }
 
-  spend(_d: Option<KeyDatum>, _r, _o, tx: Transaction) {
-    get_boundary(tx) |> key_spend(stt_policy)
+  spend(_d: Option<KeyDatum>, _r: Void, _o: OutputReference, self: Transaction) {
+    get_boundary(self) |> key_spend(stt_mint)
   }
 
   else(_) {
