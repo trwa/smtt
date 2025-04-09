@@ -141,3 +141,5 @@ pub fn get_boundary(self: Transaction) -> TransactionBoundary {
     script_outputs: get_script_outputs(self),
   }
 }
+
+pub type TxIO {TxIO}

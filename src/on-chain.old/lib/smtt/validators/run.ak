@@ -5,10 +5,7 @@ use cardano/assets.{AssetName, PolicyId}
 use cardano/transaction.{OutputReference}
 use smtt/io.{ScriptInput, ScriptOutput, ScriptUTxO, TransactionBoundary}
 use smtt/validators/tag
-
-pub type RunDatum {
-  started: Bool,
-}
+use smtt/types.{RunDatum}
 
 pub fn run_spend(
   io: TransactionBoundary,
