@@ -16,7 +16,7 @@
       "datum": {
         "title": "_d",
         "schema": {
-          "$ref": "#/definitions/cardamove~1validators~1RunDatum"
+          "$ref": "#/definitions/smtt~1validators~1RunDatum"
         }
       },
       "redeemer": {
@@ -153,7 +153,7 @@
       "datum": {
         "title": "_d",
         "schema": {
-          "$ref": "#/definitions/cardamove~1validators~1KeyDatum"
+          "$ref": "#/definitions/smtt~1validators~1KeyDatum"
         }
       },
       "redeemer": {
@@ -240,38 +240,6 @@
         }
       ]
     },
-    "cardamove/validators/KeyDatum": {
-      "title": "KeyDatum",
-      "anyOf": [
-        {
-          "title": "KeyDatum",
-          "dataType": "constructor",
-          "index": 0,
-          "fields": [
-            {
-              "title": "keys",
-              "$ref": "#/definitions/List$AssetName"
-            }
-          ]
-        }
-      ]
-    },
-    "cardamove/validators/RunDatum": {
-      "title": "RunDatum",
-      "anyOf": [
-        {
-          "title": "RunDatum",
-          "dataType": "constructor",
-          "index": 0,
-          "fields": [
-            {
-              "title": "started",
-              "$ref": "#/definitions/Bool"
-            }
-          ]
-        }
-      ]
-    },
     "cardano/transaction/OutputReference": {
       "title": "OutputReference",
       "description": "An `OutputReference` is a unique reference to an output on-chain. The `output_index`\n corresponds to the position in the output list of the transaction (identified by its id)\n that produced that output",
@@ -288,6 +256,38 @@
             {
               "title": "output_index",
               "$ref": "#/definitions/Int"
+            }
+          ]
+        }
+      ]
+    },
+    "smtt/validators/KeyDatum": {
+      "title": "KeyDatum",
+      "anyOf": [
+        {
+          "title": "KeyDatum",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "keys",
+              "$ref": "#/definitions/List$AssetName"
+            }
+          ]
+        }
+      ]
+    },
+    "smtt/validators/RunDatum": {
+      "title": "RunDatum",
+      "anyOf": [
+        {
+          "title": "RunDatum",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "started",
+              "$ref": "#/definitions/Bool"
             }
           ]
         }

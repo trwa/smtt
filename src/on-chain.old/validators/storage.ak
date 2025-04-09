@@ -1,10 +1,10 @@
 use aiken/crypto.{ScriptHash}
-use cardamove/io.{get_boundary}
-use cardamove/validators.{
-  KeyDatum, RunDatum, key_mint, key_spend, run_spend, stt_mint,
-}
 use cardano/assets.{PolicyId}
 use cardano/transaction.{OutputReference, Transaction, find_input}
+use smtt/io.{get_boundary}
+use smtt/validators.{
+  KeyDatum, RunDatum, key_mint, key_spend, run_spend, stt_mint,
+}
 
 validator stt(utxo: OutputReference) {
   mint(_r: Void, policy: PolicyId, self: Transaction) {

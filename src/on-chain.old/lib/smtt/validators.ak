@@ -1,9 +1,9 @@
 use aiken/collection/list
 use aiken/crypto.{ScriptHash}
 use aiken/primitive/bytearray
-use cardamove/io.{ScriptInput, ScriptOutput, ScriptUTxO, TransactionBoundary}
 use cardano/assets.{AssetName, PolicyId}
 use cardano/transaction.{OutputReference}
+use smtt/io.{ScriptInput, ScriptOutput, ScriptUTxO, TransactionBoundary}
 
 // =====================================================================================================================
 // STT

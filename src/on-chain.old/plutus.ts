@@ -13,12 +13,12 @@ export type ListAssetName = Array<AssetName>;
 export type PolicyId = string;
 export type ScriptHash = string;
 export type Void = undefined;
-export type CardamoveValidatorsKeyDatum = { keys: ListAssetName };
-export type CardamoveValidatorsRunDatum = { started: Bool };
 export type CardanoTransactionOutputReference = {
   transactionId: ByteArray;
   outputIndex: Int;
 };
+export type SmttValidatorsKeyDatum = { keys: ListAssetName };
+export type SmttValidatorsRunDatum = { started: Bool };
 
 const definitions = {
   "AssetName": { "title": "AssetName", "dataType": "bytes" },
@@ -48,24 +48,6 @@ const definitions = {
     "title": "Unit",
     "anyOf": [{ "dataType": "constructor", "index": 0, "fields": [] }],
   },
-  "cardamove/validators/KeyDatum": {
-    "title": "KeyDatum",
-    "anyOf": [{
-      "title": "KeyDatum",
-      "dataType": "constructor",
-      "index": 0,
-      "fields": [{ "title": "keys", "$ref": "#/definitions/List$AssetName" }],
-    }],
-  },
-  "cardamove/validators/RunDatum": {
-    "title": "RunDatum",
-    "anyOf": [{
-      "title": "RunDatum",
-      "dataType": "constructor",
-      "index": 0,
-      "fields": [{ "title": "started", "$ref": "#/definitions/Bool" }],
-    }],
-  },
   "cardano/transaction/OutputReference": {
     "title": "OutputReference",
     "description":
@@ -80,6 +62,24 @@ const definitions = {
       }, { "title": "outputIndex", "$ref": "#/definitions/Int" }],
     }],
   },
+  "smtt/validators/KeyDatum": {
+    "title": "KeyDatum",
+    "anyOf": [{
+      "title": "KeyDatum",
+      "dataType": "constructor",
+      "index": 0,
+      "fields": [{ "title": "keys", "$ref": "#/definitions/List$AssetName" }],
+    }],
+  },
+  "smtt/validators/RunDatum": {
+    "title": "RunDatum",
+    "anyOf": [{
+      "title": "RunDatum",
+      "dataType": "constructor",
+      "index": 0,
+      "fields": [{ "title": "started", "$ref": "#/definitions/Bool" }],
+    }],
+  },
 };
 
 export interface StorageRunSpend {
@@ -90,7 +90,7 @@ export interface StorageRunSpend {
     _contractSpend: ScriptHash,
     splitThreshold: Int,
   ): Script;
-  _d: CardamoveValidatorsRunDatum;
+  _d: SmttValidatorsRunDatum;
   _r: Void;
 }
 
@@ -125,7 +125,7 @@ export const StorageRunSpend = Object.assign(
   },
   {
     _d: {
-      "shape": { "$ref": "#/definitions/cardamove/validators/RunDatum" },
+      "shape": { "$ref": "#/definitions/smtt/validators/RunDatum" },
       definitions,
     },
   },
@@ -186,7 +186,7 @@ export const StorageTagMint = Object.assign(
 
 export interface StorageTagSpend {
   new (sttMint: PolicyId): Script;
-  _d: CardamoveValidatorsKeyDatum;
+  _d: SmttValidatorsKeyDatum;
   _r: Void;
 }
 
@@ -209,7 +209,7 @@ export const StorageTagSpend = Object.assign(
   },
   {
     _d: {
-      "shape": { "$ref": "#/definitions/cardamove/validators/KeyDatum" },
+      "shape": { "$ref": "#/definitions/smtt/validators/KeyDatum" },
       definitions,
     },
   },
