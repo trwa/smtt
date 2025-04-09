@@ -15,18 +15,37 @@ pub type RunDatum {
 
 validator stt(out_ref: OutputReference) {
   mint(_r: Void, policy: PolicyId, self: Transaction) {
+    trace @"Checking one-time output reference is spent..."
     expect Some(_) = find_input(self.inputs, out_ref)
+
+    trace @"Checking there is only one value with the policy id of STT..."
     expect [(address, (_, name, amount))] =
       utils.asset_list_output(self)
         |> list.filter(fn((_, (p, _, _))) { p == policy })
+
+    trace @"Checking the asset is sent to a script address..."
     expect Script(hash) = address
-    expect amount == 1 && name == hash
+
+    trace @"Checking the asset is 1..."
+    expect amount == 1
+
+    trace @"Checking the asset name is the same as the script hash...": name, hash
+    expect name == hash
+
+    trace @"Getting the full UTxO containing the STT..."
     expect [utxo] =
       utils.utxo_list_output(self)
         |> list.filter(fn(u) { u.address == address })
+    trace @"Expecting the UTxO contains an inline datum..."
     expect InlineDatum(datum) = utxo.datum
+
+    trace @"Checking the datum is a RunDatum..."
     expect datum: RunDatum = datum
+
+    trace @"Checking the datum is a RunDatum with started = False..."
     expect datum.started == False
+
+    trace @"All good."
     True
   }
 
