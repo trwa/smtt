@@ -1,4 +1,4 @@
-use aiken/option.{Option, and_then}
+use aiken/option.{and_then}
 
 pub fn return(x: a) -> Option<a> {
   Some(x)
