@@ -1,6 +1,23 @@
-import {CardanoTransactionOutputReference, SimpleTrueSpend, SmttRunSpend, SmttSttMint, SmttTagMint, SmttTagSpend,} from "./on-chain/plutus.ts";
+import {
+  CardanoTransactionOutputReference,
+  SimpleTrueSpend,
+  SmttRunSpend,
+  SmttSttMint,
+  SmttTagMint,
+  SmttTagSpend,
+} from "./on-chain.old/plutus.ts";
 import {lucid} from "./config.ts";
-import {Data, fromText, Hasher, Script, toHex, Tx, TxComplete, TxSigned, Utxo,} from "https://deno.land/x/lucid@0.20.9/mod.ts";
+import {
+  Data,
+  fromText,
+  Hasher,
+  Script,
+  toHex,
+  Tx,
+  TxComplete,
+  TxSigned,
+  Utxo,
+} from "https://deno.land/x/lucid@0.20.9/mod.ts";
 
 import {findTagSpendState, sleep, tagMake, tagNameMax, tagNameMin,} from "./utils.ts";
 
@@ -53,7 +70,7 @@ class SmttMake {
 
   public async fund(): Promise<void> {
     const policy = Hasher.hashScript(this.sttMint);
-    const stt = policy + fromText("stt");
+    const stt = policy + Hasher.hashScript(this.runSpend);
 
     let tx: Tx = lucid.newTx()
       .attachScript(this.sttMint)
@@ -132,7 +149,8 @@ class SmttMake {
 
   private async propagateSttToRunSpend(tx: Tx) {
     const addressRunSpend = lucid.utils.scriptToAddress(this.runSpend);
-    const stt = Hasher.hashScript(this.sttMint) + fromText("stt");
+    const stt = Hasher.hashScript(this.sttMint) +
+      Hasher.hashScript(this.runSpend);
     const utxos = await lucid.utxosAtWithUnit(addressRunSpend, stt);
     const datum = Data.to({ started: true }, SmttRunSpend._d);
     const redeemer = Data.void();
