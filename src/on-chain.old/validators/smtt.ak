@@ -67,20 +67,72 @@ validator tag(stt_mint: PolicyId) {
   }
 }
 
-validator run(
-  _stt_mint: PolicyId,
+fn run_start(_tag_mint: PolicyId, _tag_spend: ScriptHash) -> Bool {
+  True
+}
+
+fn run_add(
   _tag_mint: PolicyId,
   _tag_spend: ScriptHash,
   _contract_spend: ScriptHash,
+) -> Bool {
+  True
+}
+
+validator run(
+  stt_mint: PolicyId,
+  tag_mint: PolicyId,
+  tag_spend: ScriptHash,
+  contract_spend: ScriptHash,
   _split_threshold: Int,
 ) {
   spend(
-    _d: Option<RunDatum>,
+    option_datum: Option<RunDatum>,
     _r: Void,
-    _utxo: OutputReference,
-    _self: Transaction,
+    utxo: OutputReference,
+    self: Transaction,
   ) {
-    True
+    trace @"Obtaining the script's input..."
+    expect Some(input) = find_input(self.inputs, utxo)
+    trace @"Obtaining the script's hash..."
+    expect Script(hash) = input.output.address.payment_credential
+    trace @"There must be only one STT asset in the inputs."
+    expect [(address, (_, name, amount))] =
+      utils.asset_list_input(self)
+        |> list.filter(fn((_, (p, _, _))) { p == stt_mint })
+    trace @"The address must be the script's hash."
+    expect address == Script(hash)
+    trace @"The amount of the asset must be 1."
+    expect amount == 1
+    trace @"The name of the asset must be the script's hash...": name, hash
+    expect name == hash
+    trace @"There must be only one STT asset in the outputs."
+    expect [(address, (_, name, amount))] =
+      utils.asset_list_output(self)
+        |> list.filter(fn((_, (p, _, _))) { p == stt_mint })
+    trace @"The address must be the script's hash."
+    expect address == Script(hash)
+    trace @"The amount of the asset must be 1."
+    expect amount == 1
+    trace @"The name of the asset must be the script's hash...": name, hash
+    expect name == hash
+    trace @"Obtaining the full output UTxO holding the STT..."
+    expect [utxo] =
+      utils.utxo_list_output(self)
+        |> list.filter(fn(u) { u.address == address })
+    trace @"The UTxO must contain an inline datum."
+    expect InlineDatum(datum) = utxo.datum
+    trace @"The datum must have type RunDatum."
+    expect datum: RunDatum = datum
+    trace @"The field started must be False."
+    expect datum.started == True
+    trace @"The current datum must exist."
+    expect Some(datum) = option_datum
+    if !datum.started {
+      run_start(tag_mint, tag_spend)
+    } else {
+      run_add(tag_mint, tag_spend, contract_spend)
+    }
   }
 
   else(_) {
