@@ -84,7 +84,7 @@ class SmttMake {
       .payToContract(
         lucid.utils.scriptToAddress(this.runSpend),
         {
-          Inline: Data.to({ started: false }, SmttRunSpend._d),
+          Inline: Data.to({ started: false }, SmttRunSpend.optionDatum),
           scriptRef: this.runSpend,
         },
         { [stt]: 1n },
@@ -152,7 +152,7 @@ class SmttMake {
     const stt = Hasher.hashScript(this.sttMint) +
       Hasher.hashScript(this.runSpend);
     const utxos = await lucid.utxosAtWithUnit(addressRunSpend, stt);
-    const datum = Data.to({ started: true }, SmttRunSpend._d);
+    const datum = Data.to({ started: true }, SmttRunSpend.optionDatum);
     const redeemer = Data.void();
     return tx
       .collectFrom(utxos, redeemer)
