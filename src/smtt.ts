@@ -5,7 +5,7 @@ import {
   SmttSttMint,
   SmttTagMint,
   SmttTagSpend,
-} from "./on-chain.old/plutus.ts";
+} from "./on-chain/plutus.ts";
 import {lucid} from "./config.ts";
 import {
   Data,
