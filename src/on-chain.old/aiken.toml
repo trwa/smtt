@@ -1,13 +1,13 @@
-name = "trwa/cardamove"
+name = "trwa/smtt"
 version = "0.0.0"
 compiler = "v1.1.3"
 plutus = "v3"
 license = "AGPL-3.0"
-description = "Aiken contracts for project 'trwa/cardamove'"
+description = "Aiken tag minting for the paper 'Secure Distributed State Management in eUTxO Blockchains'"
 
 [repository]
 user = "trwa"
-project = "cardamove"
+project = "smtt"
 platform = "github"
 
 [[dependencies]]
