@@ -2,7 +2,9 @@ use aiken/collection/list
 use aiken/crypto.{ScriptHash}
 use cardano/address.{Script}
 use cardano/assets.{AssetName, PolicyId}
-use cardano/transaction.{InlineDatum, OutputReference, Transaction, find_input}
+use cardano/transaction.{
+  InlineDatum, Mint, OutputReference, Transaction, find_input,
+}
 use smtt/utils
 
 pub type TagDatum {
@@ -22,6 +24,9 @@ validator stt(out_ref: OutputReference) {
   mint(_r: Void, policy: PolicyId, self: Transaction) {
     trace @"The output reference parameter must be consumed by the minting transaction to ensure a one-time minting policy."
     expect Some(_) = find_input(self.inputs, out_ref)
+    // =================================================================================================================
+    // Checking the STT in the inputs
+    // =================================================================================================================
     trace @"There must be only one asset minted with this policy."
     expect [(address, (_, name, amount))] =
       utils.asset_list_output(self)
@@ -33,6 +38,9 @@ validator stt(out_ref: OutputReference) {
     trace @"The name of the asset must be the script's hash...": name, hash
     expect name == hash
     trace @"Obtaining the full UTxO holding the minted asset..."
+    // =================================================================================================================
+    // Checking the datum in the outputs
+    // =================================================================================================================
     expect [utxo] =
       utils.utxo_list_output(self)
         |> list.filter(fn(u) { u.address == address })
@@ -67,18 +75,6 @@ validator tag(stt_mint: PolicyId) {
   }
 }
 
-fn run_start(_tag_mint: PolicyId, _tag_spend: ScriptHash) -> Bool {
-  True
-}
-
-fn run_add(
-  _tag_mint: PolicyId,
-  _tag_spend: ScriptHash,
-  _contract_spend: ScriptHash,
-) -> Bool {
-  True
-}
-
 validator run(
   stt_mint: PolicyId,
   tag_mint: PolicyId,
@@ -92,6 +88,9 @@ validator run(
     utxo: OutputReference,
     self: Transaction,
   ) {
+    // =================================================================================================================
+    // Checking the STT in the inputs
+    // =================================================================================================================
     trace @"Obtaining the script's input..."
     expect Some(input) = find_input(self.inputs, utxo)
     trace @"Obtaining the script's hash..."
@@ -106,6 +105,9 @@ validator run(
     expect amount == 1
     trace @"The name of the asset must be the script's hash...": name, hash
     expect name == hash
+    // =================================================================================================================
+    // Checking the STT in the outputs
+    // =================================================================================================================
     trace @"There must be only one STT asset in the outputs."
     expect [(address, (_, name, amount))] =
       utils.asset_list_output(self)
@@ -116,22 +118,47 @@ validator run(
     expect amount == 1
     trace @"The name of the asset must be the script's hash...": name, hash
     expect name == hash
+    // =================================================================================================================
+    // Checking the datum in the outputs
+    // =================================================================================================================
     trace @"Obtaining the full output UTxO holding the STT..."
     expect [utxo] =
       utils.utxo_list_output(self)
         |> list.filter(fn(u) { u.address == address })
     trace @"The UTxO must contain an inline datum."
-    expect InlineDatum(datum) = utxo.datum
+    expect InlineDatum(datum_output) = utxo.datum
     trace @"The datum must have type RunDatum."
-    expect datum: RunDatum = datum
-    trace @"The field started must be False."
-    expect datum.started == True
+    expect datum_output: RunDatum = datum_output
+    trace @"The field started must be True."
+    expect datum_output.started == True
+    // =================================================================================================================
+    // Checking the datum in the inputs
+    // =================================================================================================================
     trace @"The current datum must exist."
     expect Some(datum) = option_datum
+    // =================================================================================================================
+    // Ensuring tag_mint is called
+    // =================================================================================================================
+    trace @"The tag minting policy must be called."
+    expect self.redeemers |> list.any(fn(pair) { pair.1st == Mint(tag_mint) })
+    // =================================================================================================================
+    // Obtaining the tag spend utxo(s) in the outputs
+    // =================================================================================================================
+    let utxos =
+      utils.utxo_list_output(self)
+        |> list.filter(fn(u) { u.address == Script(tag_spend) })
     if !datum.started {
-      run_start(tag_mint, tag_spend)
+      trace @"The output utxos of the tag spend script must be exactly one."
+      expect [_utxo] = utxos
+      True
     } else {
-      run_add(tag_mint, tag_spend, contract_spend)
+      // ===============================================================================================================
+      // Obtaining the datum(s) of the tag spend script in the inputs
+      // ===============================================================================================================
+      expect [_utxo] =
+        utils.utxo_list_input(self)
+          |> list.filter(fn(u) { u.address == Script(tag_spend) })
+      True
     }
   }
 
