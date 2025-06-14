@@ -1,11 +1,9 @@
 use aiken/collection/dict
 use aiken/collection/list
 use aiken/crypto.{ScriptHash}
-use aiken/primitive/bytearray
 use cardano/assets.{PolicyId, tokens}
 use cardano/transaction.{
   InlineDatum, Input, Output, OutputReference, Transaction, find_input,
-  find_script_outputs,
 }
 
 pub type Storage {
@@ -97,7 +95,12 @@ validator token {
   }
 }
 
-validator global(_id: ByteArray, tag_policy: PolicyId, _c: Int, _n: Int) {
+validator global(
+  _id: ByteArray,
+  tag_policy: PolicyId,
+  _chunk_size: Int,
+  _num_chunks: Int,
+) {
   spend(
     _datum: Option<Storage>,
     _redeemer: Empty,
@@ -110,23 +113,25 @@ validator global(_id: ByteArray, tag_policy: PolicyId, _c: Int, _n: Int) {
     expect Some(script_hash) = input.output.reference_script
     // Find the script's inputs
     let inputs: List<Input> = own_inputs(self.inputs, script_hash)
-    // -----------------------------------
-    // Read all transaction inputs
-    // Find the script's input
-    expect Some(input) = find_input(inputs, output_reference)
-    // Get the script's hash
-    expect Some(script_hash) = input.output.reference_script
-    // Filter all the inputs that are not the script's input
-    expect _inputs: List<Input> =
-      inputs
-        |> list.filter(
-            fn(input) {
-              when input.output.reference_script is {
-                None -> False
-                Some(hash) -> hash == script_hash
-              }
-            },
-          )
+    // Check the presence of the tag in the script's inputs
+    expect list.all(inputs, fn(input) { has_tag(input.output, tag_policy) })
+    // Find the script's outputs
+    let outputs: List<Output> = own_outputs(self.outputs, script_hash)
+    // Check the presence of the tag in the script's outputs
+    expect list.all(outputs, fn(output) { has_tag(output, tag_policy) })
+    // Read the script's datum from all inputs
+    let pairs: Pairs<ByteArray, ByteArray> =
+      list.flat_map(
+        inputs,
+        fn(input) {
+          expect InlineDatum(data) = input.output.datum
+          expect Storage { pairs } = data
+          pairs
+        },
+      )
+    // Convert the list to a dictionary (n*log(n) complexity) (realistic use case)
+    expect _storage = dict.from_pairs(pairs)
+    // Always succeed (after this, we are just benchmarking the validator's logic)
     True
   }
 
