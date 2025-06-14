@@ -84,17 +84,6 @@ validator local(
   }
 }
 
-validator token {
-  mint(_redeemer: Empty, _policy_id: PolicyId, _self: Transaction) {
-    // Always succeed
-    True
-  }
-
-  else(_) {
-    fail
-  }
-}
-
 validator global(
   _id: ByteArray,
   tag_policy: PolicyId,
@@ -132,6 +121,8 @@ validator global(
     // Convert the list to a dictionary (n*log(n) complexity) (realistic use case)
     expect _storage = dict.from_pairs(pairs)
     // Always succeed (after this, we are just benchmarking the validator's logic)
+    // Here we can use storage TRANSPARENTLY as if it was in a single input
+    // TODO: check only the script with the lexicographically smallest hash should execute, all others should just succeed
     True
   }
 
