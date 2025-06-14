@@ -1,3 +1,3 @@
-# smtt/benchmark
+# Examples
 
-This is a simple benchmark for using the SMTT-enabled storage in Cardano UTxOs.
+This is a simple example benchmark for using the SMTT-enabled storage in Cardano UTxOs.
