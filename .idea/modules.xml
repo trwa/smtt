@@ -2,7 +2,13 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/smtt.iml" filepath="$PROJECT_DIR$/.idea/smtt.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/smtt/core.iml" filepath="$PROJECT_DIR$/.idea/modules/smtt/core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/smtt/core.core-build.iml" filepath="$PROJECT_DIR$/.idea/modules/smtt/core.core-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/smtt/integration/core.integration.iml" filepath="$PROJECT_DIR$/.idea/modules/smtt/integration/core.integration.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/smtt/integration/core.integration.main.iml" filepath="$PROJECT_DIR$/.idea/modules/smtt/integration/core.integration.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/smtt/integration/core.integration.test.iml" filepath="$PROJECT_DIR$/.idea/modules/smtt/integration/core.integration.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/smtt/core.main.iml" filepath="$PROJECT_DIR$/.idea/modules/smtt/core.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/smtt/core.test.iml" filepath="$PROJECT_DIR$/.idea/modules/smtt/core.test.iml" />
     </modules>
   </component>
 </project>
