@@ -9,6 +9,13 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/smtt/integration/core.integration.test.iml" filepath="$PROJECT_DIR$/.idea/modules/smtt/integration/core.integration.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/smtt/core.main.iml" filepath="$PROJECT_DIR$/.idea/modules/smtt/core.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/smtt/core.test.iml" filepath="$PROJECT_DIR$/.idea/modules/smtt/core.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/smtt/smtt.core.iml" filepath="$PROJECT_DIR$/.idea/modules/smtt/smtt.core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/smtt/smtt.core.core-build.iml" filepath="$PROJECT_DIR$/.idea/modules/smtt/smtt.core.core-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/smtt/integration/smtt.core.integration.iml" filepath="$PROJECT_DIR$/.idea/modules/smtt/integration/smtt.core.integration.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/smtt/integration/smtt.core.integration.main.iml" filepath="$PROJECT_DIR$/.idea/modules/smtt/integration/smtt.core.integration.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/smtt/integration/smtt.core.integration.test.iml" filepath="$PROJECT_DIR$/.idea/modules/smtt/integration/smtt.core.integration.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/smtt/smtt.core.main.iml" filepath="$PROJECT_DIR$/.idea/modules/smtt/smtt.core.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/smtt/smtt.core.test.iml" filepath="$PROJECT_DIR$/.idea/modules/smtt/smtt.core.test.iml" />
     </modules>
   </component>
 </project>
