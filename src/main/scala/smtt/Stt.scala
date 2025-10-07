@@ -14,6 +14,13 @@ object Stt extends ParameterizedValidator[TxOutRef]:
         policyId: PolicyId,
         txInfo: TxInfo
     ): Unit =
+        val inputs = txInfo.inputs
+        val outputs = txInfo.outputs
+        val mint = txInfo.mint
+
+        // JUST IMPLEMENT https://aiken-lang.org/fundamentals/common-design-patterns#state-thread-tokens-aka-stt
+        mint.toSortedMap
+
         if !inputParamIsSpent(txInfo.inputs, txOutRef) then
             fail("The output reference parameter is not consumed by the minting transaction.")
         val mintedTokens = getOutputMintedTokens(txInfo.outputs, policyId)
@@ -27,8 +34,5 @@ object Stt extends ParameterizedValidator[TxOutRef]:
         outputs: List[TxOut],
         policyId: PolicyId
     ): SortedMap[AssetName, Long] = {
-        flatMap(outputs.map(_.value.toSortedMapget(policyId))) match
-            case Some(assets) => assets
-            case _            => SortedMap.empty[AssetName, Long]
         fail("TODO: implement")
     }
