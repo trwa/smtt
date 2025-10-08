@@ -7,20 +7,20 @@ import scalus.prelude.Option.{None, Some}
 import scalus.prelude.{*, given}
 
 @Compile
-object Stt extends ParameterizedValidator[TxOutRef]:
+object STT extends ParameterizedValidator[TxOutRef]:
   // Ported from Aiken's State Thread Tokens example:
   // https://aiken-lang.org/fundamentals/common-design-patterns#state-thread-tokens-aka-stt
   override def mint(
-      oneTimeProof: TxOutRef,
-      _redeemer: Redeemer,
+      oneTimeInvocationProof: TxOutRef,
+      _r: Redeemer,
       sttPolicyId: PolicyId,
-      transaction: TxInfo
-  ): Unit =
-    val status: Option[Unit] = for
+      txInfo: TxInfo
+  ): Unit = (
+    for
       // Ensure the UTxO identified by `txOutRef` is consumed by this transaction.
-      input <- Utils.findInput(transaction.inputs, oneTimeProof)
+      input <- Utils.findInput(txInfo.inputs, oneTimeInvocationProof)
       // Ensure exactly one "STT" token is minted from this policyId and nothing else.
-      tokens <- transaction.mint.toSortedMap.get(sttPolicyId)
+      tokens <- txInfo.mint.toSortedMap.get(sttPolicyId)
       tokens <- if tokens.size == BigInt(1) then Some(tokens) else None
       sttAssetName = ByteString.fromString("STT")
       amount <- tokens.get(sttAssetName)
@@ -40,4 +40,4 @@ object Stt extends ParameterizedValidator[TxOutRef]:
       valid <- if !datum.started then Some(()) else None
      */
     yield result
-    status.getOrElse(fail("Could not find the required minting conditions."))
+  ).getOrElse(fail("Could not find the required minting conditions."))
